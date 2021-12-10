@@ -6,7 +6,7 @@
 /*   By: yironmak <yironmak@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 19:47:30 by yironmak          #+#    #+#             */
-/*   Updated: 2021/12/10 16:27:48 by yironmak         ###   ########.fr       */
+/*   Updated: 2021/12/10 16:58:32 by yironmak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	process(char *arg, char **envp)
 
 	pipe(end);
 	parent = fork();
-	printf("%s %d\n", arg, parent);
 	if (parent < 0)
 	{
 		perror("Fork: ");
@@ -42,12 +41,15 @@ void	process(char *arg, char **envp)
 	}
 }
 
-void	last_process(char **argv, char **envp, int argc)
+void	last_process(char **argv, char **envp, int argc, int append)
 {
 	int		file_out;
 	pid_t	wait;
 
-	file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+	if (!append)
+		file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+	else
+		file_out = open(argv[argc - 1], O_WRONLY | O_APPEND | O_CREAT);
 	if (file_out < 0)
 		error("Unable to open file: ", argv[argc - 1]);
 	dup2(file_out, STDOUT_FILENO);
@@ -91,16 +93,18 @@ int	main(int argc, char **argv, char **envp)
 		{
 			here_doc(argv[2]);
 			file_in = open("hd_temp", O_RDONLY);
-			i = 2;
+			dup2(file_in, STDIN_FILENO);
+			process(argv[3], envp);
+			last_process(argv, envp, argc, 1);
+			exit(0);
 		}
-		else
-			file_in = open(argv[1], O_RDONLY);
+		file_in = open(argv[1], O_RDONLY);
 		if (file_in < 0)
 			error("Unable to open file: ", argv[1]);
 		dup2(file_in, STDIN_FILENO);
 		while (++i < argc - 2)
 			process(argv[i], envp);
-		last_process(argv, envp, argc);
+		last_process(argv, envp, argc, 0);
 	}
 	else
 		error("There must be at least 4 arguments", NULL);
