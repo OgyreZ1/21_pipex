@@ -6,7 +6,7 @@
 /*   By: yironmak <yironmak@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:13:19 by yironmak          #+#    #+#             */
-/*   Updated: 2021/12/08 19:15:22 by yironmak         ###   ########.fr       */
+/*   Updated: 2021/12/10 16:12:35 by yironmak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@ void	child_process(char **argv, char **envp, int end[2])
 {
 	int	file_in;
 
-	printf("child\n");
 	file_in = open(argv[1], O_RDONLY);
+	if (file_in < 0)
+		error("Unable to open file: ", argv[1]);
 	dup2(file_in, STDIN_FILENO);
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
@@ -28,8 +29,9 @@ void	parent_process(char **argv, char **envp, int end[2])
 {
 	int	file_out;
 
-	printf("parent\n");
 	file_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC);
+	if (file_out < 0)
+		error("Unable to open file: ", argv[4]);
 	dup2(end[0], STDIN_FILENO);
 	dup2(file_out, STDOUT_FILENO);
 	close(end[1]);
@@ -40,7 +42,6 @@ int	main(int argc, char **argv, char **envp)
 {
 	int		end[2];
 	pid_t	parent;
-	int		i;
 
 	if (argc == 5)
 	{
@@ -59,4 +60,6 @@ int	main(int argc, char **argv, char **envp)
 			waitpid(parent, NULL, 0);
 		}
 	}
+	else
+		error("There must be 4 arguments", NULL);
 }
