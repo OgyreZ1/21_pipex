@@ -6,7 +6,7 @@
 /*   By: yironmak <yironmak@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:13:19 by yironmak          #+#    #+#             */
-/*   Updated: 2021/12/10 16:12:35 by yironmak         ###   ########.fr       */
+/*   Updated: 2021/12/10 19:30:23 by yironmak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	parent_process(char **argv, char **envp, int end[2])
 {
 	int	file_out;
 
-	file_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC);
+	file_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (file_out < 0)
 		error("Unable to open file: ", argv[4]);
 	dup2(end[0], STDIN_FILENO);

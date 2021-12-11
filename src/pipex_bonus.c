@@ -6,7 +6,7 @@
 /*   By: yironmak <yironmak@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 19:47:30 by yironmak          #+#    #+#             */
-/*   Updated: 2021/12/10 16:58:32 by yironmak         ###   ########.fr       */
+/*   Updated: 2021/12/10 19:31:51 by yironmak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void	last_process(char **argv, char **envp, int argc, int append)
 	pid_t	wait;
 
 	if (!append)
-		file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+		file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	else
-		file_out = open(argv[argc - 1], O_WRONLY | O_APPEND | O_CREAT);
+		file_out = open(argv[argc - 1], O_WRONLY | O_APPEND | O_CREAT, 0777);
 	if (file_out < 0)
 		error("Unable to open file: ", argv[argc - 1]);
 	dup2(file_out, STDOUT_FILENO);
